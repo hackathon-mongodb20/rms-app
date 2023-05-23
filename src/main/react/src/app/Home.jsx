@@ -81,7 +81,13 @@ class Home extends Component {
 				     <Col>{current.deviceNumber}</Col>
 				 </Row>
 			)
-			printList =  <Container fluid>{renderList} 
+			printList =  <Container fluid>
+				 <Row  className="align-items-center viewport-height">
+				 	 <Col>Stanza</Col>
+				     <Col>Sede</Col>
+				     <Col>Numero dispositivi</Col>
+				 </Row>
+			{renderList} 
 			<Button variant="primary" disabled="true">Crea profili</Button>  
 			</Container>
 		} else if ( this.state.details != null ) {
