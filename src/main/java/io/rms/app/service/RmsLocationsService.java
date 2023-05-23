@@ -27,34 +27,43 @@ public class RmsLocationsService {
     
     /*
      *  aggregation :
-			 [
-			  {
-			      {
-			        index: "Locations_Search_Index",
-			        text: {
-			          query: "CED",
-			          path: {
-			            wildcard: "*",
-			          },
-			        },
-			      },
-			  },
-			  {
-			    $set:
-			      {
-			        deviceNumber: {
-			          $size: "$devices",
-			        },
-			      },
-			  },
-			  {
-			    $project:
-			      {
-			        _id: 0,
-			        devices: 0,
-			      },
-			  },
-			]
+[
+  {
+    $search:
+      {
+        index: "Locations_Search_Index",
+        text: {
+          query: "CED",
+          path: {
+            wildcard: "*",
+          },
+        },
+      },
+  },
+  {
+    $set:
+      {
+        devices: {
+          $ifNull: ["$devices", []],
+        },
+      },
+  },
+  {
+    $set:
+      {
+        deviceNumber: {
+          $size: "$devices",
+        },
+      },
+  },
+  {
+    $project:
+      {
+        _id: 0,
+        devices: 0,
+      },
+  },
+]
      * 
      */
 	public ResultDTO<List<Document>> atlasSearch( String text ) {
@@ -65,13 +74,16 @@ public class RmsLocationsService {
 			Arrays.asList(new Document("$search", 
 					new Document("index", "Locations_Search_Index")
 				    	.append("text", new Document("query", text).append("path", 
-				    new Document("wildcard", "*")))), 
-				    new Document("$set", 
-				    new Document("deviceNumber", 
-				    new Document("$size", "$devices"))), 
-				    new Document("$project", 
-				    new Document("_id", 0L)
-				            .append("devices", 0L))) );
+				    				    new Document("wildcard", "*")))), 
+				    				    new Document("$set", 
+				    				    new Document("devices", 
+				    				    new Document("$ifNull", Arrays.asList("$devices", Arrays.asList())))), 
+				    				    new Document("$set", 
+				    				    new Document("deviceNumber", 
+				    				    new Document("$size", "$devices"))), 
+				    				    new Document("$project", 
+				    				    new Document("_id", 0L)
+				    				            .append("devices", 0L))));
 		MongoCursor<Document> cursor = result.iterator();
 		while ( cursor.hasNext() ) {
 			docs.add (cursor.next() );
