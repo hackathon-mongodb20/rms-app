@@ -1,1 +1,9 @@
-
+server:
+  port: 8080
+  servlet:
+    context-path: /rms-app
+    
+spring:
+  data:
+    mongodb:
+      uri: mongodb://root:example@localhost:27017/test_db
