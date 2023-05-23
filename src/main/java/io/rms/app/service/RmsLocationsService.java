@@ -93,4 +93,40 @@ public class RmsLocationsService {
 		return dto;
 	}
 	
+	
+	/*
+	 * 
+	[
+	  {
+	    $match:
+	      {
+	        name: "1H01",
+	      },
+	  },
+	  {
+	    $project:
+	      {
+	        _id: 0,
+	      },
+	  },
+	]
+	 * 
+	 */
+	public ResultDTO<Document> details( String name ) {
+		Document doc = null;
+		MongoCollection<Document> collection = mongoTemplate.getCollection( COLLECTION_NAME );
+		// aggregation : details	
+		AggregateIterable<Document> result = collection.aggregate( 		
+				Arrays.asList(new Document("$match", 
+					    new Document("name", name)), 
+					    new Document("$project", 
+					    new Document("_id", 0L))) );
+		MongoCursor<Document> cursor = result.iterator();
+		if ( cursor.hasNext() ) {
+			doc = cursor.next();
+		}
+		ResultDTO<Document> dto = new ResultDTO<>( doc );
+		return dto;
+	}
+	
 }

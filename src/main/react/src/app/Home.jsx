@@ -2,6 +2,7 @@ import React, { Component, Fragment } from 'react';
 
 import appService from '../common/app-service';
 
+import Link from '@mui/material/Link';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
@@ -21,6 +22,7 @@ class Home extends Component {
 		super(props);
 		this.state = {
 			atlasSearch: null,
+			details: null,
 			searchResult: null
 		}
 	}
@@ -31,7 +33,9 @@ class Home extends Component {
 				appService.doAjaxJson('GET', '/rms/locations/atlas_search/'+event.target.value, null).then(response => {
 				if (response.success) {
 					reactState.setState({
-						searchResult: response.result
+						searchResult: response.result,
+						details: null,
+						prevSearch:null
 					})
 				} else {
 					reactState.setState({
@@ -41,6 +45,30 @@ class Home extends Component {
 			})
 		}
   	}
+  	
+ 	handleDetails( name ) {
+			  	var reactState = this;
+				appService.doAjaxJson('GET', '/rms/locations/details/'+name, null).then(response => {
+				if (response.success) {
+					reactState.setState({
+						prevSearch:this.state.searchResult,
+						searchResult: null,
+						details: response.result
+					})
+				} else {
+					reactState.setState({
+						supportedExtensions: null
+					})
+				}
+			})
+	};
+
+ 	handleBack() {
+		 this.setState( {	
+			searchResult: this.state.prevSearch,
+			details: null		 
+		 })
+	};
 
 	render() {
 		let printList = '';
@@ -48,12 +76,32 @@ class Home extends Component {
 			let count = 0;
 			let renderList = this.state.searchResult.content.map( (current) =>  
 				 <Row key={count++} className="align-items-center viewport-height">
-				 	 <Col>{current.name}</Col>
+				 	 <Col><Link onClick={ () => this.handleDetails(current.name) }>{current.name}</Link></Col>
 				     <Col>{current.building}</Col>
 				     <Col>{current.deviceNumber}</Col>
 				 </Row>
 			)
-			printList =  <Container fluid>{renderList} </Container>
+			printList =  <Container fluid>{renderList} 
+			<Button variant="primary" disabled="true">Crea profili</Button>  
+			</Container>
+		} else if ( this.state.details != null ) {
+			let count = 0;
+			let renderList = this.state.details.content.devices.map( (current) =>  
+				 <Row key={count++} className="align-items-center viewport-height">
+				     <Col>{current.name}</Col>
+				     <Col>{current.type}</Col>
+				 </Row>
+			)
+			printList =  <Container fluid>
+				<h3>{this.state.details.content.name} ({this.state.details.content.building})</h3>
+			    <Button variant="primary" onClick={ () => this.handleBack() }>Indietro</Button> 
+				<Row>
+					<Col><b>Nome dispositivo</b></Col>
+					<Col><b>Tipo dispositivo</b></Col>
+				</Row>
+				{renderList} 
+				<Button variant="primary" disabled="true">Prenota</Button>  
+			</Container>
 		}
 		return <Fragment>
 			<h1>Room Management System : App</h1>
