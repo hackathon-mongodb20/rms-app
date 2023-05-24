@@ -9,7 +9,8 @@ const TITLE = 'RMS Demo';
 
 const darkTheme = createTheme({
   palette: {
-    mode: 'dark',
+	background: { default:'#785c9c' },
+    mode: 'dark'
   },
 });
 

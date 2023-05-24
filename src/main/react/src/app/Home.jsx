@@ -3,12 +3,6 @@ import React, { Component, Fragment } from 'react';
 import appService from '../common/app-service';
 
 import Link from '@mui/material/Link';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
-import Avatar from '@mui/material/Avatar';
-import ImageIcon from '@mui/icons-material/Image';
 import { Button } from 'react-bootstrap';
 import TextField from '@mui/material/TextField';
 
